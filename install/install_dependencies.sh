@@ -1,4 +1,5 @@
 echo
+echo
 echo "==================================================================="
 echo "============== DEBUT DU SCRIPT - INSTALL_DEPENDENCIES ============="
 echo "==================================================================="
@@ -6,7 +7,7 @@ echo
 echo
 
 echo "----------------------------------------------------------------------"
-echo "                           [1/4] MISE À JOUR                          "
+echo "                           [1/3] MISE À JOUR                          "
 echo "           Mise à jour de la liste des paquets et du système         "
 echo "----------------------------------------------------------------------"
 echo
@@ -15,7 +16,7 @@ echo
 echo
 
 echo "----------------------------------------------------------------------"
-echo "               [2/4] INSTALLATION DES DÉPENDANCES SYSTÈME            "
+echo "               [2/3] INSTALLATION DES DÉPENDANCES SYSTÈME            "
 echo "----------------------------------------------------------------------"
 echo
 
@@ -95,7 +96,7 @@ echo
 echo
 
 echo "----------------------------------------------------------------------"
-echo "             [3/4] CLONAGE ET COMPILATION DE JBIG2ENC                "
+echo "             [3/3] CLONAGE ET COMPILATION DE JBIG2ENC                "
 echo "----------------------------------------------------------------------"
 cd /opt
 
@@ -107,7 +108,10 @@ else
   sudo rm -rf /opt/jbig2enc
   sudo git clone https://github.com/agl/jbig2enc.git
 fi
-
+echo
+echo
+echo
+echo
 cd /opt/jbig2enc
 sudo ./autogen.sh
 sudo ./configure
@@ -116,48 +120,8 @@ sudo make install
 echo
 echo
 
-echo "----------------------------------------------------------------------"
-echo "             [4/4] CONFIGURATION DE NGINX POUR PDFTOOLS              "
-echo "----------------------------------------------------------------------"
-
-NGINX_CONF_SRC="/opt/pdftools/nginx/pdftools.conf"
-NGINX_CONF_DEST="/etc/nginx/sites-available/pdftools"
-NGINX_SYMLINK="/etc/nginx/sites-enabled/pdftools"
-
-echo "Copie de la configuration Nginx..."
-if [ -f "$NGINX_CONF_SRC" ]; then
-  sudo cp "$NGINX_CONF_SRC" "$NGINX_CONF_DEST"
-else
-  echo "Erreur : fichier de configuration introuvable : $NGINX_CONF_SRC"
-  exit 1
-fi
-
-echo "Activation de la configuration..."
-if [ ! -L "$NGINX_SYMLINK" ]; then
-  sudo ln -s "$NGINX_CONF_DEST" "$NGINX_SYMLINK"
-fi
-
-echo "Désactivation de la configuration par défaut..."
-if [ -L "/etc/nginx/sites-enabled/default" ]; then
-  sudo rm /etc/nginx/sites-enabled/default
-fi
-
-echo "Vérification de la configuration Nginx..."
-sudo nginx -t
-
-echo "Redémarrage de Nginx..."
-sudo systemctl reload nginx
-
-if command -v ufw > /dev/null; then
-  echo "Ouverture du pare-feu pour Nginx..."
-  sudo ufw allow 'Nginx Full'
-fi
-
-echo
-echo "Accès au site : http://<IP_DU_SERVEUR>/"
-echo
-
 echo "==================================================================="
 echo "============== FIN DU SCRIPT - INSTALL_DEPENDENCIES =============="
 echo "==================================================================="
-
+echo
+echo
