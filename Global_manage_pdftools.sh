@@ -134,4 +134,4 @@ while true; do
       ;;
   esac
 done
-clear
+do clear
