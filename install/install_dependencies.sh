@@ -1,5 +1,4 @@
-#!/bin/bash
-
+echo
 echo "==================================================================="
 echo "============== DEBUT DU SCRIPT - INSTALL_DEPENDENCIES ============="
 echo "==================================================================="
@@ -47,8 +46,8 @@ echo
 echo "----------------------------------------------------------------------"
 echo "           [2.5] Optimisation d’images                                "
 echo "----------------------------------------------------------------------"
-sudo apt install -y pngquant imagemagick libjpeg-dev libjpeg-turbo-progs libwebp-dev \
-libopenjp2-7-dev libtiff-tools libtiff-dev libleptonica-dev libfreetype6-dev \
+sudo apt install -y pngquant imagemagick libjpeg-dev libjpeg-turbo-progs libwebp-dev \\
+libopenjp2-7-dev libtiff-tools libtiff-dev libleptonica-dev libfreetype6-dev \\
 liblcms2-dev libpng-dev libheif1
 echo
 
@@ -161,3 +160,4 @@ echo
 echo "==================================================================="
 echo "============== FIN DU SCRIPT - INSTALL_DEPENDENCIES =============="
 echo "==================================================================="
+
