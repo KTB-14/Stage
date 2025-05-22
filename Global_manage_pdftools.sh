@@ -24,20 +24,20 @@ while true; do
   echo "==================================================================="
   echo
   echo "====================== INSTALLATION & PRÉPARATION ======================"
-  echo "1) Cloner et préparer le dépôt PDFTools"
-  echo "2) Installer les dépendances système (OCR, PDF, ...)"
-  echo "3) Installer les dépendances Python (bibliothèques, ...) "
-  echo "4) Installer ou désinstaller la configuration Nginx uniquement"
+  echo " 1) Cloner et préparer le dépôt PDFTools"
+  echo " 2) Installer les dépendances système (OCR, PDF, ...)"
+  echo " 3) Installer les dépendances Python (bibliothèques, ...) "
+  echo " 4) Installer ou désinstaller la configuration Nginx uniquement"
   echo "    → Configure Nginx pour servir le frontend et reverse proxy vers FastAPI"
   echo
   echo "=========== GESTION DES SERVICES (ocr-api, celery, purge OCR)==========="
-  echo "5) Déployer les services systemd"
-  echo "6) Désinstaller les services systemd"
-  echo "7) Vérifier les services"
-  echo "8) Redémarrer tous les services"
+  echo " 5) Déployer les services systemd"
+  echo " 6) Désinstaller les services systemd"
+  echo " 7) Vérifier les services"
+  echo " 8) Redémarrer tous les services"
   echo
   echo "==================== SUPERVISION & MAINTENANCE ======================"
-  echo "9) Voir les logs du backend (50 dernières lignes)"
+  echo " 9) Voir les logs du backend (50 dernières lignes)"
   echo "10) Purger les jobs expirés manuellement"
   echo "11) Supprimer tous les jobs OCR"
   echo "12) Lancer un test API"
@@ -125,7 +125,7 @@ while true; do
       ;;
     13)
       to_log "Sortie du script"
-      echo "Sortie."
+      echo "-------------------"
       exit 0
       ;;
     *)
@@ -134,3 +134,4 @@ while true; do
       ;;
   esac
 done
+clear
