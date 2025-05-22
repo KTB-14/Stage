@@ -3197,3 +3197,26 @@ INFO:     10.103.103.233:0 - "GET /api/download/33aa2581a668_20250521-162055 HTT
 [2025-05-22 08:00:38,205] INFO in logger: ✅ Logger initialisé — Niveau : INFO — Fichier : /opt/pdftools/backend/logs/ocr.log
 [2025-05-22 08:00:38,205] INFO in purge_old_jobs: 🧹 Lancement de la purge des anciens jobs...
 [2025-05-22 08:00:38,205] INFO in purge_old_jobs: ✅ Purge terminée — 0 job(s) supprimé(s)
+[2025-05-22 18:35:46] Installation des dépendances système
+[2025-05-22 18:36:13] Fin de l'installation des dépendances système
+[2025-05-22 18:36:39] Désinstallation des services systemd
+[2025-05-22 18:36:43] Fin de la désinstallation des services systemd
+[2025-05-22 18:36:46] Déploiement des services systemd
+[2025-05-22 18:36:48,031] INFO in logger: ✅ Logger initialisé — Niveau : INFO — Fichier : /opt/pdftools/backend/logs/ocr.log
+[2025-05-22 18:36:48,031] INFO in logger: ✅ Logger initialisé — Niveau : INFO — Fichier : /opt/pdftools/backend/logs/ocr.log
+[2025-05-22 18:36:48] Fin du déploiement des services systemd
+[2025-05-22 18:36:48,468] INFO in main: 🚀 Démarrage de l'application FastAPI PDFTools
+[2025-05-22 18:36:48,468] INFO in main: 🚀 Démarrage de l'application FastAPI PDFTools
+[2025-05-22 18:36:48,469] INFO in main: Dossier OCR_ROOT vérifié/créé à : /opt/pdftools/data/jobs
+[2025-05-22 18:36:48,469] INFO in main: Dossier OCR_ROOT vérifié/créé à : /opt/pdftools/data/jobs
+[2025-05-22 18:36:48,471] INFO in logger: ✅ Logger initialisé — Niveau : INFO — Fichier : /opt/pdftools/backend/logs/ocr.log
+[2025-05-22 18:36:48,474] INFO in main: ✅ Routes API enregistrées : /api/upload, /api/status, /api/download
+[2025-05-22 18:36:48,474] INFO in main: ✅ Routes API enregistrées : /api/upload, /api/status, /api/download
+[2025-05-22 18:36:48,475] INFO in main: 🎯 CORS activé pour : ['*']
+[2025-05-22 18:36:48,475] INFO in main: 🎯 CORS activé pour : ['*']
+INFO:     Started server process [30601]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+[2025-05-22 18:36:51] Sortie du script de gestion PDFTools
+INFO:     192.168.1.121:0 - "POST /upload HTTP/1.0" 404 Not Found
