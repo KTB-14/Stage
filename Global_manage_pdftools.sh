@@ -6,21 +6,29 @@ echo "==================================================================="
 
 while true; do
   echo
+  echo "====================== INSTALLATION & PRÉPARATION ======================"
   echo "1) Cloner et préparer le dépôt PDFTools"
-  echo "2) Installer les dépendances système"
-  echo "3) Installer les dépendances Python"
-  echo "4) Déployer les services systemd"
-  echo "5) Désinstaller les services systemd"
-  echo "6) Vérifier les services"
-  echo "7) Redémarrer tous les services"
-  echo "8) Voir les logs du backend"
-  echo "9) Purger les jobs expirés manuellement"
-  echo "10) Supprimer tous les jobs OCR"
-  echo "11) Lancer un test API"
-  echo "12) Quitter"
-  echo "13) Installer ou désinstaller la configuration Nginx uniquement"
+  echo "2) Installer les dépendances système (OCR, PDF, ...)"
+  echo "3) Installer les dépendances Python (bibliothèques, ...) "
+  echo "4) Installer ou désinstaller la configuration Nginx uniquement"
+  echo "    → Configure Nginx pour servir le frontend et reverse proxy vers FastAPI"
   echo
-  read -p "Choix [1-13] : " choice
+  echo "=========== GESTION DES SERVICES (ocr-api, celery, purge OCR)==========="
+  echo "5) Déployer les services systemd"
+  echo "6) Désinstaller les services systemd"
+  echo "7) Vérifier les services"
+  echo "8) Redémarrer tous les services"
+  echo
+  echo "==================== SUPERVISION & MAINTENANCE ======================"
+  echo "9) Voir les logs du backend (50 dernières lignes)"
+  echo "10) Purger les jobs expirés manuellement"
+  echo "11) Supprimer tous les jobs OCR"
+  echo "12) Lancer un test API"
+  echo
+  echo "============================= QUITTER =============================="
+  echo "13) Quitter"
+  echo
+  read -p "Choix [1-12] : " choice
 
   case "$choice" in
     1)
@@ -42,49 +50,49 @@ while true; do
       read -p "Appuyez sur Entrée pour continuer..."
       ;;
     4)
-      bash /opt/pdftools/install/deploy_systemd.sh
+      if [ -f "/opt/pdftools/nginx_manage_pdftools.sh" ]; then
+        bash /opt/pdftools/nginx_manage_pdftools.sh
+      else
+        echo "Erreur : /opt/pdftools/nginx_manage_pdftools.sh introuvable"
+      fi
       read -p "Appuyez sur Entrée pour continuer..."
       ;;
     5)
-      bash /opt/pdftools/install/uninstall_systemd.sh
+      bash /opt/pdftools/install/deploy_systemd.sh
       read -p "Appuyez sur Entrée pour continuer..."
       ;;
     6)
+      bash /opt/pdftools/install/uninstall_systemd.sh
+      read -p "Appuyez sur Entrée pour continuer..."
+      ;;
+    7)
       systemctl status ocr-api.service --no-pager
       systemctl status celery-ocr.service --no-pager
       systemctl list-timers --all | grep purge-ocr || echo "(timer non actif)"
       read -p "Appuyez sur Entrée pour continuer..."
       ;;
-    7)
+    8)
       sudo systemctl restart ocr-api.service
       sudo systemctl restart celery-ocr.service
       echo "✅ Services redémarrés."
       read -p "Appuyez sur Entrée pour continuer..."
       ;;
-    8)
+    9)
       tail -n 50 /opt/pdftools/backend/logs/ocr.log
       read -p "Appuyez sur Entrée pour continuer..."
       ;;
-    9)
+    10)
       python3 /opt/pdftools/backend/scripts/purge_old_jobs.py
       read -p "Appuyez sur Entrée pour continuer..."
       ;;
-    10)
+    11)
       rm -rf /opt/pdftools/data/jobs/*
       echo "✅ Tous les jobs supprimés."
       read -p "Appuyez sur Entrée pour continuer..."
       ;;
-    11)
+    12)
       curl -s http://localhost/api/
       echo
-      read -p "Appuyez sur Entrée pour continuer..."
-      ;;
-    12)
-      if [ -f "/opt/pdftools/install/nginx_install.sh" ]; then
-        bash /opt/pdftools/install/nginx_install.sh
-      else
-        echo "Erreur : /opt/pdftools/install/nginx_install.sh introuvable"
-      fi
       read -p "Appuyez sur Entrée pour continuer..."
       ;;
     13)
