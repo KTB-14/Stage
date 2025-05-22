@@ -1,48 +1,49 @@
 #!/bin/bash
-echo "========================================================"
-echo "===== ===== DEBUT SCRIPT - DEPLOY_SYSTEMD.SH ===== ====="
-echo "========================================================"
 
-echo "Déploiement des fichiers systemd pour PDFTools..."
+echo "==================================================================="
+echo "=========== DEBUT DU SCRIPT - DEPLOY_SYSTEMD.SH ==================="
+echo "==================================================================="
+echo
+echo
 
-# Dossiers
+echo "----------------------------------------------------------------------"
+echo "        Ce script déploie les services systemd pour PDFTools         "
+echo "----------------------------------------------------------------------"
+echo
+
+# Variables
 PROJECT_DIR="/opt/pdftools"
 SYSTEMD_DIR="/etc/systemd/system"
 SOURCE_DIR="$PROJECT_DIR/install/systemd"
 
-# Vérification des droits
+# Vérification des privilèges root
 if [ "$EUID" -ne 0 ]; then
-  echo "Ce script doit être exécuté en tant que root (sudo)."
+  echo "Ce script doit être exécuté en tant que root."
   exit 1
 fi
 
-# Copie des fichiers systemd
-echo "Copie des fichiers .service et .timer depuis $SOURCE_DIR"
-cp "$SOURCE_DIR"/*.service "$SYSTEMD_DIR"/
-cp "$SOURCE_DIR"/*.timer "$SYSTEMD_DIR"/
+echo "Copie des fichiers .service et .timer..."
+sudo cp "$SOURCE_DIR"/*.service "$SYSTEMD_DIR"/
+sudo cp "$SOURCE_DIR"/*.timer "$SYSTEMD_DIR"/
 
-# Recharger systemd
 echo "Rechargement de systemd..."
-systemctl daemon-reexec
-systemctl daemon-reload
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
 
-# Activer les services OCR et Celery
-echo "Activation des services OCR et Celery..."
-systemctl enable --now ocr-api.service
-systemctl enable --now celery-ocr.service
+echo "Activation et démarrage des services OCR et Celery..."
+sudo systemctl enable --now ocr-api.service
+sudo systemctl enable --now celery-ocr.service
 
-# Activer le timer de purge automatique
-echo "⏱Activation du timer de purge OCR..."
-systemctl enable --now purge-ocr.timer
+echo "Activation et démarrage du timer de purge automatique..."
+sudo systemctl enable --now purge-ocr.timer
 
-# Vérifications
-echo "État des services :"
-systemctl status ocr-api.service --no-pager
-systemctl status celery-ocr.service --no-pager
-systemctl list-timers --all | grep purge-ocr
+echo
+echo "Vérification des statuts :"
+sudo systemctl status ocr-api.service --no-pager
+sudo systemctl status celery-ocr.service --no-pager
+sudo systemctl list-timers --all | grep purge-ocr || echo "(Timer inactif)"
 
-echo "Déploiement terminé avec succès."
-
-echo "========================================================"
-echo "===== ====== FIN SCRIPT - DEPLOY_SYSTEMD.SH ====== ====="
-echo "========================================================"
+echo
+echo "==================================================================="
+echo "=========== FIN DU SCRIPT - DEPLOY_SYSTEMD.SH ====================="
+echo "==================================================================="

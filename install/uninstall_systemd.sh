@@ -1,12 +1,23 @@
 #!/bin/bash
 
-echo "========================================================"
-echo "========= DEBUT SCRIPT - UNINSTALL_SYSTEMD.SH =========="
-echo "========================================================"
+echo "==================================================================="
+echo "========== DEBUT DU SCRIPT - UNINSTALL_SYSTEMD.SH ================="
+echo "==================================================================="
+echo
+echo
 
-echo "Suppression des services systemd PDFTools..."
+echo "----------------------------------------------------------------------"
+echo "        Ce script désinstalle les services systemd de PDFTools        "
+echo "----------------------------------------------------------------------"
+echo
 
-# Fichiers à supprimer
+# Vérification des privilèges root
+if [ "$EUID" -ne 0 ]; then
+  echo "Ce script doit être exécuté en tant que root."
+  exit 1
+fi
+
+# Liste des services à désactiver et supprimer
 SERVICES=(
   ocr-api.service
   celery-ocr.service
@@ -14,34 +25,24 @@ SERVICES=(
   purge-ocr.timer
 )
 
-# Vérification des droits
-if [ "$EUID" -ne 0 ]; then
-  echo "Ce script doit être exécuté en tant que root (sudo)."
-  exit 1
-fi
-
-# Désactivation + arrêt
+echo "Désactivation et arrêt des services..."
 for svc in "${SERVICES[@]}"; do
-  echo "Désactivation de $svc..."
-  systemctl disable --now "$svc" 2>/dev/null
+  sudo systemctl disable --now "$svc" 2>/dev/null
 done
 
-# Suppression des fichiers
+echo "Suppression des fichiers systemd..."
 for svc in "${SERVICES[@]}"; do
   FILE="/etc/systemd/system/$svc"
   if [ -f "$FILE" ]; then
-    echo "Suppression de $FILE"
-    rm "$FILE"
+    sudo rm "$FILE"
   fi
 done
 
-# Recharger systemd
-echo "🔄 Rechargement de systemd..."
-systemctl daemon-reexec
-systemctl daemon-reload
+echo "Rechargement de systemd..."
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
 
-echo "Désinstallation terminée."
-
-echo "========================================================"
-echo "========== FIN SCRIPT - UNINSTALL_SYSTEMD.SH ==========="
-echo "========================================================"
+echo
+echo "==================================================================="
+echo "=========== FIN DU SCRIPT - UNINSTALL_SYSTEMD.SH =================="
+echo "==================================================================="

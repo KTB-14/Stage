@@ -1,33 +1,45 @@
 #!/bin/bash
-echo "========================================================"
-echo "=========== DEBUT SCRIPT - INSTALL_PYTHON.SH ==========="
-echo "========================================================"
 
-echo "=== Installation des dépendances Python pour PDFTools ==="
+echo "==================================================================="
+echo "=========== DEBUT DU SCRIPT - INSTALL_PYTHON.SH ==================="
+echo "==================================================================="
+echo
+echo
 
-# Vérifie si le script est lancé en root (obligatoire pour une install globale)
+echo "----------------------------------------------------------------------"
+echo "       Ce script installe les dépendances Python de PDFTools         "
+echo "----------------------------------------------------------------------"
+echo
+
+# Vérification des privilèges root
 if [ "$EUID" -ne 0 ]; then
-  echo "Ce script doit être exécuté avec sudo (en tant que root)."
+  echo "Ce script doit être exécuté avec sudo."
   exit 1
 fi
 
 REQUIREMENTS="/opt/pdftools/backend/requirements.txt"
 
+echo "Chemin du fichier requirements : $REQUIREMENTS"
 if [ ! -f "$REQUIREMENTS" ]; then
-  echo "Fichier requirements.txt introuvable à l'emplacement : $REQUIREMENTS"
+  echo "Erreur : fichier requirements.txt introuvable."
   exit 1
 fi
 
-# Installation des paquets Python globalement (hors venv)
+echo
+echo "Installation des paquets Python globaux (hors environnement virtuel)"
+echo
 pip3 install -r "$REQUIREMENTS" --upgrade
 
 if [ $? -eq 0 ]; then
-  echo "✅ Dépendances Python installées avec succès."
+  echo
+  echo "Les dépendances Python ont été installées avec succès."
 else
-  echo "❌ Une erreur est survenue lors de l'installation des dépendances."
+  echo
+  echo "Erreur lors de l'installation des dépendances Python."
   exit 1
 fi
 
-echo "========================================================"
-echo "============ FIN SCRIPT - INSTALL_PYTHON.SH ============"
-echo "========================================================"
+echo
+echo "==================================================================="
+echo "============ FIN DU SCRIPT - INSTALL_PYTHON.SH ===================="
+echo "==================================================================="
