@@ -4,8 +4,8 @@ from celery.result import AsyncResult
 from worker.tasks import celery_app
 from app.config import config
 from app.logger import logger
-import json
 from pathlib import Path
+import json
 
 router = APIRouter()
 
@@ -22,7 +22,8 @@ def get_status(job_id: str):
         return StatusOut(
             job_id=job_id,
             status=status,
-            details=str(result.info) if result.info else None
+            details=str(result.info) if result.info else None,
+            files=_get_output_files(job_id) if status == JobStatus.done else None
         )
     except ValueError:
         logger.info(f"[{job_id}] ⚠️ Statut Celery inconnu ou terminé – fallback vers status.json")
@@ -32,11 +33,15 @@ def get_status(job_id: str):
         try:
             with open(status_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
+
+            files = _get_output_files(job_id)
             logger.info(f"[{job_id}] 📄 Lecture réussie de status.json")
+
             return StatusOut(
                 job_id=job_id,
                 status=JobStatus(data.get("status", "unknown")),
-                details=data.get("details")
+                details=data.get("details"),
+                files=files
             )
         except Exception as e:
             logger.exception(f"[{job_id}] ❌ Erreur lecture status.json : {e}")
@@ -44,3 +49,10 @@ def get_status(job_id: str):
 
     logger.warning(f"[{job_id}] ❌ Aucune info de statut trouvée")
     raise HTTPException(status_code=404, detail="Job non trouvé")
+
+
+def _get_output_files(job_id: str):
+    output_dir = config.OCR_ROOT / job_id / config.OUTPUT_SUBDIR
+    if not output_dir.exists():
+        return []
+    return sorted([f.name for f in output_dir.glob("*.pdf") if f.is_file()])

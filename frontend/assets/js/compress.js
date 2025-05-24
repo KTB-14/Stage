@@ -4,18 +4,17 @@ const selectBtn = document.getElementById('selectFile');
 const statusDiv = document.getElementById('status');
 const statusText = document.getElementById('statusText');
 const downloadDiv = document.getElementById('downloadLink');
-const resultLink = document.getElementById('resultLink');
 
 selectBtn.onclick = () => fileInput.click();
 fileInput.onchange = () => uploadFile(fileInput.files[0]);
 
-;['dragenter','dragover'].forEach(evt => {
+['dragenter', 'dragover'].forEach(evt => {
   dropzone.addEventListener(evt, e => {
     e.preventDefault();
     dropzone.classList.add('hover');
   });
 });
-;['dragleave','drop'].forEach(evt => {
+['dragleave', 'drop'].forEach(evt => {
   dropzone.addEventListener(evt, e => {
     e.preventDefault();
     dropzone.classList.remove('hover');
@@ -31,8 +30,8 @@ async function uploadFile(file) {
 
   statusDiv.classList.remove('hidden');
   statusText.textContent = 'Téléversement…';
+  downloadDiv.innerHTML = ''; // réinitialiser
 
-  // 1. upload
   const form = new FormData();
   form.append('files', file);
 
@@ -40,7 +39,7 @@ async function uploadFile(file) {
     method: 'POST',
     body: form
   });
-  if (!uploadRes.ok) return showError('Échec téléversement.');
+  if (!uploadRes.ok) return showError('Échec du téléversement.');
 
   const { job_id } = await uploadRes.json();
   checkStatus(job_id);
@@ -49,14 +48,28 @@ async function uploadFile(file) {
 async function checkStatus(jobId) {
   statusText.textContent = 'Traitement en cours…';
   const res = await fetch(`/api/status/${jobId}`);
-  const { status, details } = await res.json();
+  const data = await res.json();
 
-  if (status === 'done') {
+  if (data.status === 'done') {
     statusText.textContent = 'Terminé !';
-    downloadDiv.classList.remove('hidden');
-    resultLink.href = `/api/download/${jobId}`;
-  } else if (status === 'error') {
-    showError(details || 'Erreur pendant le traitement.');
+    if (Array.isArray(data.files)) {
+      downloadDiv.innerHTML = '<h4>Fichiers disponibles :</h4>';
+      data.files.forEach(file => {
+        const link = document.createElement('a');
+        link.href = `/api/download/${jobId}/${file}`;
+        link.textContent = `📥 ${file}`;
+        link.className = 'download-link';
+        link.setAttribute('download', file);
+
+        const wrapper = document.createElement('div');
+        wrapper.appendChild(link);
+        downloadDiv.appendChild(wrapper);
+      });
+    } else {
+      showError('Aucun fichier trouvé.');
+    }
+  } else if (data.status === 'error') {
+    showError(data.details || 'Erreur pendant le traitement.');
   } else {
     setTimeout(() => checkStatus(jobId), 2000);
   }

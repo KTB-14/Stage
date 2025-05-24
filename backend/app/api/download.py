@@ -6,22 +6,22 @@ from pathlib import Path
 
 router = APIRouter()
 
-@router.get("/download/{job_id}")
-def download_archive(job_id: str):
+@router.get("/download/{job_id}/{filename}")
+def download_file(job_id: str, filename: str):
     """
-    Permet de télécharger l'archive ZIP du job si elle a été générée avec succès.
+    Permet de télécharger un fichier PDF traité spécifique dans le job.
     """
-    archive_path = config.OCR_ROOT / job_id / config.ZIP_SUBDIR / f"{job_id}.zip"
+    file_path = config.OCR_ROOT / job_id / config.OUTPUT_SUBDIR / filename
 
-    logger.info(f"[{job_id}] 📨 Demande de téléchargement de l'archive ZIP")
+    logger.info(f"[{job_id}] 📥 Requête de téléchargement pour le fichier : {filename}")
 
-    if not archive_path.exists() or not archive_path.is_file():
-        logger.warning(f"[{job_id}] ❌ Archive non trouvée à {archive_path}")
-        raise HTTPException(status_code=404, detail="Archive non trouvée. Traitement probablement en cours.")
+    if not file_path.exists() or not file_path.is_file():
+        logger.warning(f"[{job_id}] ❌ Fichier introuvable : {file_path}")
+        raise HTTPException(status_code=404, detail="Fichier non trouvé")
 
-    logger.info(f"[{job_id}] ✅ Archive trouvée, envoi du fichier")
+    logger.info(f"[{job_id}] ✅ Fichier trouvé : {file_path}")
     return FileResponse(
-        path=str(archive_path),
-        filename=f"{job_id}.zip",
-        media_type="application/zip"
+        path=str(file_path),
+        filename=filename,
+        media_type="application/pdf"
     )
