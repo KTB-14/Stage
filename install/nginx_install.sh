@@ -10,7 +10,7 @@ NGINX_SYMLINK="/etc/nginx/sites-enabled/pdftools"
 
 echo
 echo "1) Installer et activer Nginx pour PDFTools"
-echo "2) Désinstaller la configuration Nginx PDFTools"
+echo "2) Désinstaller complètement Nginx + config PDFTools"
 echo "3) Quitter"
 echo
 read -p "Choix [1-3] : " choice
@@ -62,20 +62,26 @@ case "$choice" in
   2)
     echo
     echo "----------------------------------------------------------------------"
-    echo "            [2/2] DÉSINSTALLATION DE LA CONFIGURATION NGINX          "
+    echo "           [2/2] DÉSINSTALLATION COMPLÈTE DE NGINX + CONFIG          "
     echo "----------------------------------------------------------------------"
 
-    echo "Désactivation de la configuration PDFTools..."
+    echo "Suppression des fichiers de configuration PDFTools..."
     sudo rm -f "$NGINX_SYMLINK"
-
-    echo "Suppression du fichier de configuration PDFTools..."
     sudo rm -f "$NGINX_CONF_DEST"
 
-    echo "Redémarrage de Nginx..."
-    sudo systemctl restart nginx
+    echo "Suppression des fichiers éventuels dans conf.d..."
+    sudo rm -f /etc/nginx/conf.d/pdftools.conf
+
+    echo "Purge de Nginx..."
+    sudo apt purge -y nginx nginx-common
+    sudo apt autoremove -y
+
+    echo "Vérification que Nginx ne tourne plus..."
+    sudo systemctl stop nginx 2>/dev/null
+    sudo systemctl disable nginx 2>/dev/null
 
     echo
-    echo "✅ Configuration PDFTools supprimée de Nginx"
+    echo "✅ Nginx et toute configuration associée à PDFTools ont été supprimés"
     echo
     ;;
 
