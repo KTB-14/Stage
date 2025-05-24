@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "==================================================================="
-echo "          SCRIPT DE GESTION DE NGINX POUR PDFTOOLS"
+echo "           SCRIPT DE GESTION DE NGINX POUR PDFTOOLS"
 echo "==================================================================="
 
 NGINX_CONF_SRC="/opt/pdftools/install/nginx/pdftools.conf"
@@ -16,46 +16,56 @@ echo
 read -p "Choix [1-3] : " choice
 
 case "$choice" in
+
   1)
     echo
     echo "----------------------------------------------------------------------"
     echo "           [1/2] INSTALLATION ET CONFIGURATION DE NGINX              "
     echo "----------------------------------------------------------------------"
 
-    echo "Installation de Nginx si nécessaire..."
+    echo "➤ Installation de Nginx si nécessaire..."
     sudo apt install -y nginx
 
-    echo "Copie de la configuration PDFTools..."
+    echo
+    echo "➤ Vérification et copie de la configuration PDFTools..."
     if [ -f "$NGINX_CONF_SRC" ]; then
+      echo "✔️ Fichier trouvé : $NGINX_CONF_SRC"
       sudo cp "$NGINX_CONF_SRC" "$NGINX_CONF_DEST"
+      echo "✔️ Copié vers : $NGINX_CONF_DEST"
     else
-      echo "Erreur : fichier introuvable à $NGINX_CONF_SRC"
+      echo "❌ Erreur : fichier introuvable à $NGINX_CONF_SRC"
       exit 1
     fi
 
-    echo "Activation de la configuration..."
+    echo
+    echo "➤ Activation de la configuration..."
     if [ ! -L "$NGINX_SYMLINK" ]; then
       sudo ln -s "$NGINX_CONF_DEST" "$NGINX_SYMLINK"
+      echo "✔️ Lien symbolique créé : $NGINX_SYMLINK"
+    else
+      echo "🔁 Lien déjà existant : $NGINX_SYMLINK"
     fi
 
-    echo "Suppression de la configuration par défaut si elle existe..."
-    if [ -L "/etc/nginx/sites-enabled/default" ]; then
-      sudo rm /etc/nginx/sites-enabled/default
-    fi
+    echo
+    echo "➤ Suppression de la configuration par défaut si elle existe..."
+    sudo rm -f /etc/nginx/sites-enabled/default
+    sudo rm -f /etc/nginx/conf.d/default.conf
 
-    echo "Test de configuration Nginx..."
+    echo
+    echo "➤ Test de configuration Nginx..."
     sudo nginx -t || exit 1
 
-    echo "Redémarrage de Nginx..."
+    echo
+    echo "➤ Redémarrage de Nginx..."
     sudo systemctl restart nginx
 
     if command -v ufw > /dev/null; then
-      echo "Ouverture du pare-feu pour Nginx..."
+      echo "➤ Ouverture du pare-feu pour Nginx (si activé)..."
       sudo ufw allow 'Nginx Full'
     fi
 
     echo
-    echo "✅ Nginx est maintenant configuré pour PDFTools à http://<IP_DU_SERVEUR>/"
+    echo "✅ Nginx est maintenant configuré pour PDFTools à : http://<IP_DU_SERVEUR>/"
     echo
     ;;
 
@@ -65,23 +75,23 @@ case "$choice" in
     echo "           [2/2] DÉSINSTALLATION COMPLÈTE DE NGINX + CONFIG          "
     echo "----------------------------------------------------------------------"
 
-    echo "Suppression des fichiers de configuration PDFTools..."
+    echo "➤ Suppression des fichiers de configuration PDFTools..."
     sudo rm -f "$NGINX_SYMLINK"
     sudo rm -f "$NGINX_CONF_DEST"
-
-    echo "Suppression des fichiers éventuels dans conf.d..."
     sudo rm -f /etc/nginx/conf.d/pdftools.conf
 
-    echo "Purge de Nginx..."
+    echo
+    echo "➤ Purge de Nginx..."
     sudo apt purge -y nginx nginx-common
     sudo apt autoremove -y
 
-    echo "Vérification que Nginx ne tourne plus..."
+    echo
+    echo "➤ Désactivation et arrêt de Nginx (si encore actif)..."
     sudo systemctl stop nginx 2>/dev/null
     sudo systemctl disable nginx 2>/dev/null
 
     echo
-    echo "✅ Nginx et toute configuration associée à PDFTools ont été supprimés"
+    echo "✅ Nginx et toute configuration PDFTools ont été supprimés"
     echo
     ;;
 
@@ -91,6 +101,6 @@ case "$choice" in
     ;;
 
   *)
-    echo "Option invalide."
+    echo "❌ Option invalide."
     ;;
 esac
